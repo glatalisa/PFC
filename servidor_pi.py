@@ -55,3 +55,5 @@ if __name__ == "__main__":
     print("Iniciando o servidor Flask...")
     # O host='0.0.0.0' permite que o servidor seja acessado de outros dispositivos na mesma rede.
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+print("hello world")
