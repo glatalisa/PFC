@@ -7,13 +7,23 @@ import json
 BROKER_ENDERECO = "localhost" # O mesmo broker usado pelo simulador
 PORTA_BROKER = 1883
 TOPICO_COMANDO = "projeto/atuador/1/comando"
+TOPICO_STATUS = "projeto/atuador/1/status"
+
+# Função de Callback para o Servidor
+# Esta função será chamada quando uma mensagem de STATUS chegar
+def on_message_servidor(client, userdata, msg):
+    status_recebido = msg.payload.decode("utf-8")
+    print(f"<<< Mensagem de STATUS recebida no tópico '{msg.topic}':{status_recebido}")
 
 # Configuração do Cliente MQTT
 # Criamos o cliente MQTT fora das rotas da web.
 # Isso é importante para que ele não seja criado toda vez que uma página é acessada.
 print("Configurando o cliente MQTT...")
 client_mqtt = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, "servidor_pi_01")
+client_mqtt.on_message = on_message_servidor
 client_mqtt.connect(BROKER_ENDERECO, PORTA_BROKER, 60)
+client_mqtt.subscribe(TOPICO_STATUS)
+printf(f"   - Assinando o tópico: {TOPICO_STATUS}")
 client_mqtt.loop_start() # Inicia uma thread para manter a conexão MQTT em segundo plano
 
 # Configuração do Servidor Web Flask
@@ -55,5 +65,3 @@ if __name__ == "__main__":
     print("Iniciando o servidor Flask...")
     # O host='0.0.0.0' permite que o servidor seja acessado de outros dispositivos na mesma rede.
     app.run(host='0.0.0.0', port=5000, debug=True)
-
-print("hello world")
